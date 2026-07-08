@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Autolaser - CEFET/RJ</title>
+    <style>
+        :root { --cefet-blue: #003366; --cefet-light: #e6f0fa; --status-pendente: #ffc107; --status-usinagem: #17a2b8; --status-concluido: #28a745; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: var(--cefet-blue); text-align: center; border-bottom: 2px solid var(--cefet-blue); padding-bottom: 10px; }
+        .form-group { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .form-group > div { flex: 1; min-width: 180px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
+        input, select, textarea, button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        input[type="file"] { padding: 7px; background-color: #f8f9fa; }
+        textarea { resize: vertical; }
+        button { background-color: var(--cefet-blue); color: white; border: none; cursor: pointer; font-weight: bold; transition: background-color 0.3s; margin-top: 24px; }
+        button:hover { background-color: #002244; }
+        button:disabled { background-color: #999; cursor: not-allowed; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; font-size: 0.85em;}
+        th { background-color: var(--cefet-light); color: var(--cefet-blue); }
+        .status-badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; color: #fff; display: inline-block; text-align: center;}
+        .pendente { background-color: var(--status-pendente); color: #333; }
+        .usinagem { background-color: var(--status-usinagem); }
+        .concluido { background-color: var(--status-concluido); }
+        .action-btn { padding: 6px 8px; margin: 2px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.8em; margin-top: 0; width: 100%;}
+        .btn-avancar { background-color: var(--cefet-blue); color: white; }
+        .btn-deletar { background-color: #dc3545; color: white; }
+        .btn-download { background-color: #6c757d; color: white; text-decoration: none; padding: 5px 10px; border-radius: 3px; display: inline-block; font-size: 0.8em; text-align: center;}
+        .btn-download:hover { background-color: #5a6268; }
+        .btn-wpp { background-color: #25D366; color: white; text-decoration: none; padding: 6px 8px; border-radius: 3px; display: inline-block; font-size: 0.8em; margin-top: 4px; width: 100%; text-align: center; font-weight: bold;}
+        .btn-wpp:hover { background-color: #128C7E; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Monitoramento de Pedidos (Autolaser)</h1>
+    
+    <form id="orderForm">
+        <div class="form-group">
+            <div style="flex: 2;">
+                <label for="peca">Nome do Projeto</label>
+                <input type="text" id="peca" placeholder="Ex: Chassi do Duna" required>
+            </div>
+            <div>
+                <label for="material">Material (Apenas Laser)</label>
+                <select id="material" required>
+                    <option value="">Selecione...</option>
+                    <option value="MDF">MDF</option>
+                    <option value="Acrílico">Acrílico</option>
+                    <option value="Papelão">Papelão</option>
+                </select>
+            </div>
+            <div style="flex: 0.5;">
+                <label for="quantidade">Qtd</label>
+                <input type="number" id="quantidade" min="1" value="1" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div>
+                <label for="entrega">Data de Entrega (Mín 2 dias)</label>
+                <input type="date" id="entrega" required>
+            </div>
+            <div>
+                <label for="hora">Hora da Retirada</label>
+                <input type="time" id="hora" required>
+            </div>
+            <div>
+                <label for="solicitante">Equipe / Solicitante</label>
+                <input type="text" id="solicitante" required>
+            </div>
+            <div>
+                <label for="contato">WhatsApp (Apenas Números)</label>
+                <!-- Trava para aceitar apenas 10 ou 11 números -->
+                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Digite o DDD e o número, sem espaços ou traços. Ex: 21999999999" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div style="flex: 2;">
+                <label for="obs">Observações Adicionais (Opcional)</label>
+                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm, cuidado com os encaixes..."></textarea>
+            </div>
+            <div style="flex: 1;">
+                <label for="arquivo">Arquivo (.dxf, .svg)</label>
+                <input type="file" id="arquivo" accept=".svg,.dxf" required>
+            </div>
+            <div style="flex: 1;">
+                <button type="submit" id="btnSubmit">Enviar Pedido</button>
+            </div>
+        </div>
+    </form>
+
+    <table id="ordersTable">
+        <thead>
+            <tr>
+                <th>Data Pedido</th>
+                <th>Retirada</th>
+                <th>Projeto / Obs</th>
+                <th>Material</th>
+                <th>Qtd</th>
+                <th>Solicitante</th>
+                <th>Contato</th>
+                <th>Arquivo</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr><td colspan="10" style="text-align:center;">Conectando com o servidor...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbzfm6pyVHJC3NlE_vFEnXUmuN8m_N4qncYQem5KJZ7Vqj5OCCgZofubtKN3eAOk4Duilw/exec"; 
+
+    const tableBody = document.getElementById('tableBody');
+    const orderForm = document.getElementById('orderForm');
+    const arquivoInput = document.getElementById('arquivo');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const inputEntrega = document.getElementById('entrega');
+
+    // Configura automaticamente a data mínima para 2 dias a partir de hoje
+    window.onload = function() {
+        const hoje = new Date();
+        hoje.setDate(hoje.getDate() + 2); // Soma 2 dias
+        const minData = hoje.toISOString().split('T')[0];
+        inputEntrega.min = minData;
+        inputEntrega.max = "2026-12-31"; 
+    };
+
+    function formatarDataBR(dataIso) {
+        if(!dataIso) return "";
+        const partes = dataIso.split('-');
+        if(partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        return dataIso;
+    }
+
+    async function loadOrders() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            renderTable(data);
+        } catch (error) {
+            tableBody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Erro ao carregar o banco de dados.</td></tr>';
+        }
+    }
+
+    function renderTable(orders) {
+        tableBody.innerHTML = '';
+        if(orders.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Nenhum pedido encontrado.</td></tr>';
+            return;
+        }
+
+        orders.forEach((order) => {
+            const tr = document.createElement('tr');
+            let statusClass = order.status === 'Pendente' ? 'pendente' : (order.status === 'Concluído' ? 'concluido' : 'usinagem');
+            let nextStatus = order.status === 'Pendente' ? 'Em Produção' : 'Concluído';
+            
+            let linkArquivo = (order.arquivoUrl && order.arquivoUrl.includes('http')) 
+                ? `<a href="${order.arquivoUrl}" target="_blank" class="btn-download">⬇️ Projeto</a>` 
+                : 'Sem anexo';
+
+            let numeroLimpo = String(order.contato).replace(/\D/g, '');
+            let linkWpp = '';
+            
+            if (order.status === 'Concluído' && numeroLimpo.length >= 10) {
+                if(!numeroLimpo.startsWith('55')) numeroLimpo = '55' + numeroLimpo;
+                const mensagem = encodeURIComponent(`Fala! Aqui é do laboratório do CEFET. O corte da sua peça '${order.peca}' já está pronto e liberado para retirada.`);
+                linkWpp = `<a href="https://wa.me/${numeroLimpo}?text=${mensagem}" target="_blank" class="btn-wpp">💬 Avisar WPP</a>`;
+            }
+
+            // Exibe a observação pequenininha embaixo do nome do projeto, se existir
+            let obsText = order.obs ? `<br><small style="color:gray;">Obs: ${order.obs}</small>` : '';
+
+            tr.innerHTML = `
+                <td>${order.data}</td>
+                <td><strong>${order.entrega}</strong><br>${order.hora}</td>
+                <td><strong>${order.peca}</strong>${obsText}</td>
+                <td>${order.material}</td>
+                <td>${order.quantidade}</td>
+                <td>${order.solicitante}</td>
+                <td>${order.contato}</td>
+                <td>${linkArquivo}</td>
+                <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                <td>
+                    ${order.status !== 'Concluído' ? `<button class="action-btn btn-avancar" onclick="advanceStatus('${order.id}', '${nextStatus}')">Avançar</button>` : ''}
+                    <button class="action-btn btn-deletar" onclick="deleteOrder('${order.id}')">Excluir</button>
+                    ${linkWpp}
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    orderForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const file = arquivoInput.files[0];
+        if (!file) { alert("Por favor, anexe o arquivo do projeto."); return; }
+        
+        const nomeArquivo = file.name.toLowerCase();
+        if (!nomeArquivo.endsWith('.svg') && !nomeArquivo.endsWith('.dxf')) {
+            alert("Apenas arquivos .dxf e .svg são permitidos!");
+            return;
+        }
+
+        if (file.size > 5000000) { alert("O arquivo é maior que 5MB. Reduza o arquivo antes de enviar."); return; }
+
+        btnSubmit.innerText = "Verificando agenda e enviando...";
+        btnSubmit.disabled = true;
+
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            
+            const dataPedido = new Date().toLocaleDateString('pt-BR');
+            const dataEntrega = formatarDataBR(document.getElementById('entrega').value);
+
+            const novoPedido = {
+                action: "add",
+                data: dataPedido,
+                entrega: dataEntrega,
+                hora: document.getElementById('hora').value,
+                peca: document.getElementById('peca').value,
+                material: document.getElementById('material').value,
+                quantidade: document.getElementById('quantidade').value,
+                solicitante: document.getElementById('solicitante').value,
+                contato: document.getElementById('contato').value,
+                obs: document.getElementById('obs').value,
+                arquivoBase64: event.target.result,
+                arquivoNome: file.name,
+                arquivoTipo: file.type || "application/octet-stream"
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(novoPedido)
+                });
+                const result = await response.json();
+                
+                if(result.sucesso) {
+                    orderForm.reset();
+                    loadOrders();
+                } else {
+                    alert(result.mensagem); 
+                }
+
+            } catch(error) {
+                alert("Ocorreu um erro ao enviar. Tente novamente.");
+            } finally {
+                btnSubmit.innerText = "Enviar Pedido";
+                btnSubmit.disabled = false;
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
+    window.advanceStatus = async function(id, novoStatus) {
+        const senhaDigitada = prompt("Ação restrita. Digite a senha do monitor para avançar o status:");
+        
+        if (senhaDigitada !== null && senhaDigitada !== "") {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "update", id: id, novoStatus: novoStatus, senhaDigitada: senhaDigitada })
+            });
+            
+            const result = await response.json();
+            if (result.sucesso) {
+                loadOrders();
+            } else {
+                alert(result.mensagem);
+            }
+        }
+    };
+
+    window.deleteOrder = async function(id) {
+        const senhaDigitada = prompt("Ação restrita. Digite a senha para apagar o pedido:");
+        
+        if (senhaDigitada !== null && senhaDigitada !== "") {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "delete", id: id, senhaDigitada: senhaDigitada })
+            });
+            
+            const result = await response.json();
+            if (result.sucesso) {
+                alert(result.mensagem);
+                loadOrders();
+            } else {
+                alert(result.mensagem);
+            }
+        }
+    };
+
+    loadOrders();
+</script>
+</body>
+</html>
