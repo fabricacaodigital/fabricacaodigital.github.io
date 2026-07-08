@@ -38,8 +38,7 @@
         
         <div class="oficinas-box">
             <h3>Oficinas Escolhidas:</h3>
-            <ul id="listaOficinas">
-                </ul>
+            <ul id="listaOficinas"></ul>
         </div>
     </div>
 
@@ -49,11 +48,10 @@
 </div>
 
 <script>
-    // A API OFICIAL DO SEU EVENTO JÁ INSERIDA AQUI
-    const API_URL = "https://script.google.com/macros/s/AKfycbx69v6w_jC6Nwz9eC7pnD6ES-zu-K3R457UI_RLlrBnOL_dyT0v18cFJBdxjUYKnRYN6g/exec"; 
+    // A SUA URL OFICIAL
+    const API_URL = "https://script.google.com/macros/s/AKfycbwV_uDtNsfbu53sFZfCG5s410fhA4tLsGE7-TdGVjvZflIF5RbPxZeSiIjzlJKSZFWnow/exec"; 
 
     window.onload = async function() {
-        // Pega o ID que veio no Link do QR Code (Ex: ?id=CF001)
         const params = new URLSearchParams(window.location.search);
         const idIngresso = params.get('id');
 
@@ -65,31 +63,29 @@
         }
 
         try {
-            // Manda o ID pro Google Sheets conferir
             const response = await fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({ id: idIngresso })
+                // Aqui enviamos a action: "checkin" para a sua API saber o que fazer
+                body: JSON.stringify({ action: "checkin", id: idIngresso })
             });
             
             const result = await response.json();
             document.getElementById('loading').style.display = 'none';
 
             if(result.sucesso) {
-                // Se der bom, mostra a tela verde com o nome e as oficinas
                 document.getElementById('sucesso').style.display = 'block';
                 document.getElementById('nomePessoa').innerText = result.nome;
                 document.getElementById('faculPessoa').innerText = result.instituicao;
                 
                 const ul = document.getElementById('listaOficinas');
                 result.oficinas.forEach(oficina => {
-                    if(oficina) {
+                    if(oficina && oficina.trim() !== "Nenhuma") {
                         let li = document.createElement('li');
                         li.innerText = "🔧 " + oficina;
                         ul.appendChild(li);
                     }
                 });
             } else {
-                // Se o cara já entrou ou passou 3 dias, mostra a tela vermelha
                 document.getElementById('erro').style.display = 'block';
                 document.getElementById('mensagemErro').innerText = result.mensagem;
             }
