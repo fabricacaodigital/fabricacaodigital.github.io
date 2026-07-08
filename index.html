@@ -2,51 +2,168 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Painel Autolaser - CEFET/RJ</title>
     <style>
-        :root { --cefet-blue: #003366; --cefet-light: #e6f0fa; --status-pendente: #ffc107; --status-usinagem: #17a2b8; --status-concluido: #28a745; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { color: var(--cefet-blue); text-align: center; border-bottom: 2px solid var(--cefet-blue); padding-bottom: 10px; }
+        /* ================= CORES E TEMAS ================= */
+        :root {
+            /* 1. Branco e Azul (Padrão) */
+            --bg-body: #f4f7f6;
+            --bg-container: #ffffff;
+            --text-main: #333333;
+            --primary-color: #003366;
+            --secondary-color: #e6f0fa;
+            --input-bg: #ffffff;
+            --input-border: #cccccc;
+            --input-text: #333333;
+            
+            /* Status Cores Fixas */
+            --status-pendente: #ffc107;
+            --status-usinagem: #17a2b8;
+            --status-concluido: #28a745;
+        }
+
+        [data-theme="black-white"] {
+            /* 2. Preto e Branco */
+            --bg-body: #121212;
+            --bg-container: #1e1e1e;
+            --text-main: #ffffff;
+            --primary-color: #ffffff;
+            --secondary-color: #333333;
+            --input-bg: #2d2d2d;
+            --input-border: #555555;
+            --input-text: #ffffff;
+        }
+
+        [data-theme="purple-white"] {
+            /* 3. Roxo com Branco */
+            --bg-body: #faf5ff;
+            --bg-container: #ffffff;
+            --text-main: #333333;
+            --primary-color: #7e22ce;
+            --secondary-color: #f3e8ff;
+            --input-bg: #ffffff;
+            --input-border: #cccccc;
+            --input-text: #333333;
+        }
+
+        [data-theme="pink-white"] {
+            /* 4. Rosa com Branco */
+            --bg-body: #fdf2f8;
+            --bg-container: #ffffff;
+            --text-main: #333333;
+            --primary-color: #db2777;
+            --secondary-color: #fce7f3;
+            --input-bg: #ffffff;
+            --input-border: #cccccc;
+            --input-text: #333333;
+        }
+
+        [data-theme="custom"] {
+            /* 5. Personalizado (A cor primária é injetada via JS) */
+            --bg-body: #f5f5f5;
+            --bg-container: #ffffff;
+            --text-main: #333333;
+            --secondary-color: #eeeeee;
+            --input-bg: #ffffff;
+            --input-border: #cccccc;
+            --input-text: #333333;
+        }
+
+        /* ================= ESTILOS GERAIS ================= */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px 10px; color: var(--text-main); transition: all 0.3s ease; }
+        
+        /* Modos de Visualização (Responsividade) */
+        .container { margin: 0 auto; background-color: var(--bg-container); padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; box-sizing: border-box; }
+        .view-desktop { max-width: 1200px; }
+        .view-tablet { max-width: 768px; }
+        .view-smartphone { max-width: 400px; padding: 20px 15px; }
+        
+        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        h1 { color: var(--primary-color); margin: 0; font-size: 1.6em; }
+        
+        .controls-panel { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .styled-select { padding: 8px; border-radius: 5px; border: 1px solid var(--input-border); background-color: var(--input-bg); color: var(--input-text); cursor: pointer; font-weight: bold; font-size: 0.85em; }
+        #customColorPicker { height: 35px; width: 45px; padding: 0; border: none; cursor: pointer; border-radius: 5px; background: none; }
+        
         .form-group { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .form-group > div { flex: 1; min-width: 180px; }
+        .form-group > div { flex: 1; min-width: 160px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
-        input, select, textarea, button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
-        input[type="file"] { padding: 7px; background-color: #f8f9fa; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--input-border); border-radius: 5px; box-sizing: border-box; font-family: inherit; background-color: var(--input-bg); color: var(--input-text); }
+        input[type="file"] { padding: 7px; background-color: var(--input-bg); }
         textarea { resize: vertical; }
-        button { background-color: var(--cefet-blue); color: white; border: none; cursor: pointer; font-weight: bold; transition: background-color 0.3s; margin-top: 24px; }
-        button:hover { background-color: #002244; }
+        
+        button { background-color: var(--primary-color); color: var(--bg-container); border: none; cursor: pointer; font-weight: bold; transition: opacity 0.3s; margin-top: 24px; padding: 12px; border-radius: 5px; }
+        button:hover { opacity: 0.8; }
         button:disabled { background-color: #999; cursor: not-allowed; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; font-size: 0.85em;}
-        th { background-color: var(--cefet-light); color: var(--cefet-blue); }
-        .status-badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; color: #fff; display: inline-block; text-align: center;}
-        .pendente { background-color: var(--status-pendente); color: #333; }
-        .usinagem { background-color: var(--status-usinagem); }
-        .concluido { background-color: var(--status-concluido); }
-        .action-btn { padding: 6px 8px; margin: 2px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.8em; margin-top: 0; width: 100%;}
-        .btn-avancar { background-color: var(--cefet-blue); color: white; }
-        .btn-deletar { background-color: #dc3545; color: white; }
-        .btn-download { background-color: #6c757d; color: white; text-decoration: none; padding: 5px 10px; border-radius: 3px; display: inline-block; font-size: 0.8em; text-align: center;}
-        .btn-download:hover { background-color: #5a6268; }
-        .btn-wpp { background-color: #25D366; color: white; text-decoration: none; padding: 6px 8px; border-radius: 3px; display: inline-block; font-size: 0.8em; margin-top: 4px; width: 100%; text-align: center; font-weight: bold;}
+        
+        #btnModoAdmin { background-color: #6c757d; margin-top: 0; width: auto; padding: 8px 15px; color: white; }
+        
+        /* Tabela Responsiva (Pulo do gato para celular) */
+        .table-wrapper { overflow-x: auto; width: 100%; border-radius: 5px; border: 1px solid var(--input-border); }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; } /* Força largura mínima para não esmagar conteúdo */
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--input-border); font-size: 0.85em; }
+        th { background-color: var(--secondary-color); color: var(--primary-color); position: sticky; top: 0; }
+        
+        .status-badge { padding: 6px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; color: #111; display: inline-block; text-align: center; }
+        .pendente { background-color: var(--status-pendente); }
+        .usinagem { background-color: var(--status-usinagem); color: white; }
+        .concluido { background-color: var(--status-concluido); color: white; }
+        
+        .action-btn { padding: 6px 8px; margin: 2px 0; border: none; border-radius: 3px; cursor: pointer; font-size: 0.8em; width: 100%; color: white;}
+        .btn-avancar { background-color: var(--primary-color); }
+        .btn-deletar { background-color: #dc3545; }
+        .btn-download { background-color: #6c757d; color: white; text-decoration: none; padding: 6px 10px; border-radius: 3px; display: inline-block; font-size: 0.8em; text-align: center; }
+        .btn-download:hover { opacity: 0.8; }
+        .btn-wpp { background-color: #25D366; color: white; text-decoration: none; padding: 6px 8px; border-radius: 3px; display: inline-block; font-size: 0.8em; margin-top: 4px; width: 100%; text-align: center; font-weight: bold; box-sizing: border-box;}
         .btn-wpp:hover { background-color: #128C7E; }
+
+        /* Ajustes específicos para quando o modo Smartphone estiver ativado */
+        .view-smartphone .header-bar { flex-direction: column; align-items: stretch; }
+        .view-smartphone .controls-panel { justify-content: space-between; }
+        .view-smartphone h1 { text-align: center; font-size: 1.4em; }
+        .view-smartphone .form-group > div { min-width: 100%; }
+        .view-smartphone button { margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Monitoramento de Pedidos (Autolaser)</h1>
+<div id="mainContainer" class="container view-desktop">
+    <div class="header-bar">
+        <h1>Painel Autolaser</h1>
+        
+        <div class="controls-panel">
+            <!-- Tela Selector -->
+            <select id="viewSelector" class="styled-select" onchange="changeViewMode()" title="Modo de Visualização">
+                <option value="view-desktop">💻 PC (Desktop)</option>
+                <option value="view-tablet">📱 Tablet</option>
+                <option value="view-smartphone">📱 Smartphone</option>
+            </select>
+
+            <!-- Theme Selector -->
+            <select id="themeSelector" class="styled-select" onchange="changeTheme()" title="Cor do Tema">
+                <option value="default">Branco e Azul</option>
+                <option value="black-white">Preto e Branco</option>
+                <option value="purple-white">Roxo com Branco</option>
+                <option value="pink-white">Rosa com Branco</option>
+                <option value="custom">🎨 Personalizado</option>
+            </select>
+            
+            <!-- Color Picker Escondido (Só aparece no personalizado) -->
+            <input type="color" id="customColorPicker" style="display:none;" oninput="applyCustomColor()" title="Escolha sua cor">
+
+            <button id="btnModoAdmin" onclick="toggleAdmin()">🔓 Monitor</button>
+        </div>
+    </div>
     
     <form id="orderForm">
         <div class="form-group">
             <div style="flex: 2;">
                 <label for="peca">Nome do Projeto</label>
-                <input type="text" id="peca" placeholder="Ex: Chassi do Duna" required>
+                <input type="text" id="peca" placeholder="Ex: Chassi Duna" required>
             </div>
             <div>
-                <label for="material">Material (Apenas Laser)</label>
+                <label for="material">Material (Laser)</label>
                 <select id="material" required>
                     <option value="">Selecione...</option>
                     <option value="MDF">MDF</option>
@@ -75,19 +192,18 @@
             </div>
             <div>
                 <label for="contato">WhatsApp (Apenas Números)</label>
-                <!-- Trava para aceitar apenas 10 ou 11 números -->
-                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Digite o DDD e o número, sem espaços ou traços. Ex: 21999999999" required>
+                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Apenas DDD e número." required>
             </div>
         </div>
 
         <div class="form-group">
             <div style="flex: 2;">
                 <label for="obs">Observações Adicionais (Opcional)</label>
-                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm, cuidado com os encaixes..."></textarea>
+                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm..."></textarea>
             </div>
-            <div style="flex: 1;">
-                <label for="arquivo">Arquivo (.dxf, .svg)</label>
-                <input type="file" id="arquivo" accept=".svg,.dxf" required>
+            <div style="flex: 2;">
+                <label for="arquivo">Arquivo (Vários formatos aceitos)</label>
+                <input type="file" id="arquivo" accept=".svg,.dxf,.plt,.ai,.bmp,.jpg,.jpeg,.png,.nc,.step,.stl,.webp,.dst,.gif" required>
             </div>
             <div style="flex: 1;">
                 <button type="submit" id="btnSubmit">Enviar Pedido</button>
@@ -95,28 +211,32 @@
         </div>
     </form>
 
-    <table id="ordersTable">
-        <thead>
-            <tr>
-                <th>Data Pedido</th>
-                <th>Retirada</th>
-                <th>Projeto / Obs</th>
-                <th>Material</th>
-                <th>Qtd</th>
-                <th>Solicitante</th>
-                <th>Contato</th>
-                <th>Arquivo</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-            <tr><td colspan="10" style="text-align:center;">Conectando com o servidor...</td></tr>
-        </tbody>
-    </table>
+    <!-- WRAPPER PARA TABELA ROLAR NO CELULAR -->
+    <div class="table-wrapper">
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Data Pedido</th>
+                    <th>Retirada</th>
+                    <th>Projeto / Obs</th>
+                    <th>Material</th>
+                    <th>Qtd</th>
+                    <th>Solicitante</th>
+                    <th>Contato</th>
+                    <th>Arquivo</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="10" style="text-align:center;">Conectando com o servidor...</td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
+    // URL OFICIAL DA API DO GOOGLE
     const API_URL = "https://script.google.com/macros/s/AKfycbzfm6pyVHJC3NlE_vFEnXUmuN8m_N4qncYQem5KJZ7Vqj5OCCgZofubtKN3eAOk4Duilw/exec"; 
 
     const tableBody = document.getElementById('tableBody');
@@ -124,15 +244,72 @@
     const arquivoInput = document.getElementById('arquivo');
     const btnSubmit = document.getElementById('btnSubmit');
     const inputEntrega = document.getElementById('entrega');
+    
+    // Controles de Tema e View
+    const themeSelector = document.getElementById('themeSelector');
+    const customColorPicker = document.getElementById('customColorPicker');
+    const viewSelector = document.getElementById('viewSelector');
+    const mainContainer = document.getElementById('mainContainer');
+    
+    let senhaAdminLogado = "";
 
-    // Configura automaticamente a data mínima para 2 dias a partir de hoje
+    // INICIALIZAÇÃO E CARREGAMENTO DE SALVOS
     window.onload = function() {
+        // Aplica o Tema Salvo
+        const savedTheme = localStorage.getItem('cncTheme') || 'default';
+        themeSelector.value = savedTheme;
+        changeTheme(); // Roda a função para checar se é custom
+
+        if (savedTheme === 'custom') {
+            const savedColor = localStorage.getItem('cncCustomColor') || '#003366';
+            customColorPicker.value = savedColor;
+            applyCustomColor();
+        }
+
+        // Aplica o Modo de Tela Salvo
+        const savedView = localStorage.getItem('cncViewMode') || 'view-desktop';
+        viewSelector.value = savedView;
+        changeViewMode();
+
+        // Limita a Data Mínima
         const hoje = new Date();
-        hoje.setDate(hoje.getDate() + 2); // Soma 2 dias
-        const minData = hoje.toISOString().split('T')[0];
-        inputEntrega.min = minData;
+        hoje.setDate(hoje.getDate() + 2); 
+        inputEntrega.min = hoje.toISOString().split('T')[0];
         inputEntrega.max = "2026-12-31"; 
     };
+
+    // FUNÇÕES DE TELA E TEMA
+    function changeViewMode() {
+        const selectedView = viewSelector.value;
+        mainContainer.className = 'container ' + selectedView;
+        localStorage.setItem('cncViewMode', selectedView);
+    }
+
+    function changeTheme() {
+        const selectedTheme = themeSelector.value;
+        
+        if (selectedTheme === 'custom') {
+            customColorPicker.style.display = 'inline-block';
+            document.documentElement.setAttribute('data-theme', 'custom');
+            applyCustomColor(); // Aplica a cor atual do picker
+        } else {
+            customColorPicker.style.display = 'none';
+            document.documentElement.setAttribute('data-theme', selectedTheme);
+            document.documentElement.style.removeProperty('--primary-color'); // Limpa a cor injetada
+            
+            // Para o tema preto e branco, garante que o botão primário seja visível
+            if(selectedTheme === 'black-white') {
+                 document.documentElement.style.setProperty('--primary-color', '#ffffff');
+            }
+        }
+        localStorage.setItem('cncTheme', selectedTheme);
+    }
+
+    function applyCustomColor() {
+        const color = customColorPicker.value;
+        document.documentElement.style.setProperty('--primary-color', color);
+        localStorage.setItem('cncCustomColor', color);
+    }
 
     function formatarDataBR(dataIso) {
         if(!dataIso) return "";
@@ -141,16 +318,36 @@
         return dataIso;
     }
 
+    // CARREGAR DADOS DO BANCO
     async function loadOrders() {
         try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
+            let response, data;
+            
+            if (senhaAdminLogado !== "") {
+                response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "admin_data", senhaDigitada: senhaAdminLogado })
+                });
+                const result = await response.json();
+                if (result.sucesso) {
+                    data = result.dados;
+                } else {
+                    senhaAdminLogado = ""; 
+                    response = await fetch(API_URL);
+                    data = await response.json();
+                }
+            } else {
+                response = await fetch(API_URL);
+                data = await response.json();
+            }
+            
             renderTable(data);
         } catch (error) {
-            tableBody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Erro ao carregar o banco de dados.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Erro de conexão com o banco de dados.</td></tr>';
         }
     }
 
+    // RENDERIZAR TABELA
     function renderTable(orders) {
         tableBody.innerHTML = '';
         if(orders.length === 0) {
@@ -167,17 +364,31 @@
                 ? `<a href="${order.arquivoUrl}" target="_blank" class="btn-download">⬇️ Projeto</a>` 
                 : 'Sem anexo';
 
-            let numeroLimpo = String(order.contato).replace(/\D/g, '');
             let linkWpp = '';
-            
-            if (order.status === 'Concluído' && numeroLimpo.length >= 10) {
-                if(!numeroLimpo.startsWith('55')) numeroLimpo = '55' + numeroLimpo;
-                const mensagem = encodeURIComponent(`Fala! Aqui é do laboratório do CEFET. O corte da sua peça '${order.peca}' já está pronto e liberado para retirada.`);
-                linkWpp = `<a href="https://wa.me/${numeroLimpo}?text=${mensagem}" target="_blank" class="btn-wpp">💬 Avisar WPP</a>`;
+            if (order.contato !== "🔒 Oculto" && order.status === 'Concluído') {
+                let numeroLimpo = String(order.contato).replace(/\D/g, '');
+                if (numeroLimpo.length >= 10) {
+                    if(!numeroLimpo.startsWith('55')) numeroLimpo = '55' + numeroLimpo;
+                    const mensagem = encodeURIComponent(`Fala! Aqui é do laboratório do CEFET. O corte da sua peça '${order.peca}' já está pronto e liberado para retirada.`);
+                    linkWpp = `<a href="https://wa.me/${numeroLimpo}?text=${mensagem}" target="_blank" class="btn-wpp">💬 Avisar WPP</a>`;
+                }
             }
 
-            // Exibe a observação pequenininha embaixo do nome do projeto, se existir
-            let obsText = order.obs ? `<br><small style="color:gray;">Obs: ${order.obs}</small>` : '';
+            let obsText = order.obs ? `<br><small style="color:gray; font-style: italic;">Obs: ${order.obs}</small>` : '';
+
+            let acoesHtml = "";
+            if (senhaAdminLogado !== "") {
+                acoesHtml = `
+                    ${order.status !== 'Concluído' ? `<button class="action-btn btn-avancar" onclick="advanceStatus('${order.id}', '${nextStatus}')">Avançar</button>` : ''}
+                    <button class="action-btn btn-deletar" onclick="deleteOrder('${order.id}')">Excluir</button>
+                    ${linkWpp}
+                `;
+            } else {
+                acoesHtml = `<small style="color:var(--text-main); opacity: 0.6;">Acesso restrito</small>`;
+            }
+
+            // Tratamento especial para botão primário não sumir no fundo branco caso o tema seja preto e branco
+            let corBotaoAcao = (document.documentElement.getAttribute('data-theme') === 'black-white') ? '#111' : 'white';
 
             tr.innerHTML = `
                 <td>${order.data}</td>
@@ -186,19 +397,45 @@
                 <td>${order.material}</td>
                 <td>${order.quantidade}</td>
                 <td>${order.solicitante}</td>
-                <td>${order.contato}</td>
+                <td style="color: ${order.contato === '🔒 Oculto' ? '#999' : 'inherit'}"><strong>${order.contato}</strong></td>
                 <td>${linkArquivo}</td>
                 <td><span class="status-badge ${statusClass}">${order.status}</span></td>
-                <td>
-                    ${order.status !== 'Concluído' ? `<button class="action-btn btn-avancar" onclick="advanceStatus('${order.id}', '${nextStatus}')">Avançar</button>` : ''}
-                    <button class="action-btn btn-deletar" onclick="deleteOrder('${order.id}')">Excluir</button>
-                    ${linkWpp}
-                </td>
+                <td><div style="color: ${corBotaoAcao};">${acoesHtml}</div></td>
             `;
             tableBody.appendChild(tr);
         });
     }
 
+    // LOGIN DO MONITOR
+    window.toggleAdmin = async function() {
+        if (senhaAdminLogado !== "") {
+            senhaAdminLogado = "";
+            document.getElementById('btnModoAdmin').innerText = "🔓 Monitor";
+            document.getElementById('btnModoAdmin').style.backgroundColor = "#6c757d";
+            loadOrders();
+            alert("Modo Monitor desativado. Contatos ocultos.");
+            return;
+        }
+
+        const senha = prompt("Digite a senha do monitor para liberar números e controles:");
+        if (senha) {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "admin_data", senhaDigitada: senha })
+            });
+            const result = await response.json();
+            if (result.sucesso) {
+                senhaAdminLogado = senha;
+                document.getElementById('btnModoAdmin').innerText = "🔒 Sair do Modo Monitor";
+                document.getElementById('btnModoAdmin').style.backgroundColor = "#dc3545";
+                renderTable(result.dados);
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
+    }
+
+    // ENVIAR PEDIDO
     orderForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -206,8 +443,11 @@
         if (!file) { alert("Por favor, anexe o arquivo do projeto."); return; }
         
         const nomeArquivo = file.name.toLowerCase();
-        if (!nomeArquivo.endsWith('.svg') && !nomeArquivo.endsWith('.dxf')) {
-            alert("Apenas arquivos .dxf e .svg são permitidos!");
+        const extensoesPermitidas = ['.dxf', '.svg', '.plt', '.ai', '.bmp', '.jpg', '.jpeg', '.png', '.nc', '.step', '.stl', '.webp', '.dst', '.gif'];
+        const formatoValido = extensoesPermitidas.some(ext => nomeArquivo.endsWith(ext));
+        
+        if (!formatoValido) {
+            alert("Formato não suportado! Formatos aceitos: " + extensoesPermitidas.join(', '));
             return;
         }
 
@@ -220,7 +460,7 @@
         reader.onload = async function(event) {
             
             const dataPedido = new Date().toLocaleDateString('pt-BR');
-            const dataEntrega = formatarDataBR(document.getElementById('entrega').value);
+            const dataEntrega = formatarDataBR(inputEntrega.value);
 
             const novoPedido = {
                 action: "add",
@@ -262,36 +502,28 @@
         reader.readAsDataURL(file);
     });
 
+    // AVANÇAR E DELETAR (AÇÕES DO MONITOR)
     window.advanceStatus = async function(id, novoStatus) {
-        const senhaDigitada = prompt("Ação restrita. Digite a senha do monitor para avançar o status:");
-        
-        if (senhaDigitada !== null && senhaDigitada !== "") {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "update", id: id, novoStatus: novoStatus, senhaDigitada: senhaDigitada })
-            });
-            
-            const result = await response.json();
-            if (result.sucesso) {
-                loadOrders();
-            } else {
-                alert(result.mensagem);
-            }
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "update", id: id, novoStatus: novoStatus, senhaDigitada: senhaAdminLogado })
+        });
+        const result = await response.json();
+        if (result.sucesso) {
+            loadOrders();
+        } else {
+            alert(result.mensagem);
         }
     };
 
     window.deleteOrder = async function(id) {
-        const senhaDigitada = prompt("Ação restrita. Digite a senha para apagar o pedido:");
-        
-        if (senhaDigitada !== null && senhaDigitada !== "") {
+        if(confirm('Tem certeza que deseja apagar permanentemente este pedido?')) {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: "delete", id: id, senhaDigitada: senhaDigitada })
+                body: JSON.stringify({ action: "delete", id: id, senhaDigitada: senhaAdminLogado })
             });
-            
             const result = await response.json();
             if (result.sucesso) {
-                alert(result.mensagem);
                 loadOrders();
             } else {
                 alert(result.mensagem);
