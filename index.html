@@ -106,7 +106,9 @@
         .btn-deletar { background-color: #dc3545; }
         .btn-download { background-color: #6c757d; color: white; text-decoration: none; padding: 6px 10px; border-radius: 3px; display: inline-block; font-size: 0.8em; text-align: center; }
         .btn-download:hover { opacity: 0.8; }
-        .btn-wpp { background-color: #25D366; color: white; text-decoration: none; padding: 6px 8px; border-radius: 3px; display: inline-block; font-size: 0.8em; margin-top: 4px; width: 100%; text-align: center; font-weight: bold; box-sizing: border-box;}
+        
+        /* Ajuste do botão do WhatsApp para alinhar o ícone */
+        .btn-wpp { background-color: #25D366; color: white; text-decoration: none; padding: 6px 8px; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8em; margin-top: 4px; width: 100%; font-weight: bold; box-sizing: border-box; gap: 5px;}
         .btn-wpp:hover { background-color: #128C7E; }
 
         .view-smartphone .header-bar { flex-direction: column; align-items: stretch; }
@@ -139,7 +141,9 @@
             </select>
             
             <input type="color" id="customColorPicker" style="display:none;" oninput="applyCustomColor()" title="Escolha sua cor">
-            <button id="btnModoAdmin" onclick="toggleAdmin()">🔓 Monitor</button>
+            
+            <!-- Botão com nome de Administrador -->
+            <button id="btnModoAdmin" onclick="toggleAdmin()">🔓 Administrador</button>
         </div>
     </div>
     
@@ -159,45 +163,39 @@
                 </select>
             </div>
             <div style="flex: 0.5;">
-                <label for="quantidade">Quantidade</label>
+                <label for="quantidade">Qtd</label>
                 <input type="number" id="quantidade" min="1" value="1" required>
             </div>
         </div>
         
         <div class="form-group">
             <div>
-                <label for="fabricacao">Data que quer o projeto pronto</label>
-                <input type="date" id="fabricacao" required>
+                <!-- Campo atualizado para "Data de Retirada" -->
+                <label for="entrega">Data de Retirada</label>
+                <input type="date" id="entrega" required>
             </div>
             <div>
-                <label for="retirada">Data da retirada</label>
-                <input type="date" id="retirada" required>
-            </div>
-            <div>
-                <label for="hora">hora da retirada</label>
+                <label for="hora">Hora da Retirada</label>
                 <input type="time" id="hora" required>
+            </div>
+            <div style="flex: 1.5;">
+                <label for="solicitante">Equipe / Solicitante</label>
+                <input type="text" id="solicitante" required>
+            </div>
+            <div style="flex: 1.5;">
+                <label for="contato">WhatsApp (Apenas Números)</label>
+                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Apenas DDD e número." required>
             </div>
         </div>
 
         <div class="form-group">
-            <div style="flex: 1;">
-                <label for="solicitante">Equipe / Solicitante</label>
-                <input type="text" id="solicitante" required>
-            </div>
-            <div style="flex: 1;">
-                <label for="contato">WhatsApp (Apenas Números)</label>
-                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Apenas DDD e número." required>
+            <div style="flex: 2;">
+                <label for="obs">Observações Adicionais (Opcional)</label>
+                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm..."></textarea>
             </div>
             <div style="flex: 2;">
                 <label for="arquivo">Arquivo (Vários formatos aceitos)</label>
                 <input type="file" id="arquivo" accept=".svg,.dxf,.plt,.ai,.bmp,.jpg,.jpeg,.png,.nc,.step,.stl,.webp,.dst,.gif" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div style="flex: 3;">
-                <label for="obs">Observações Adicionais (Opcional)</label>
-                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm..."></textarea>
             </div>
             <div style="flex: 1;">
                 <button type="submit" id="btnSubmit">Enviar Pedido</button>
@@ -210,11 +208,10 @@
             <thead>
                 <tr>
                     <th>Data Pedido</th>
-                    <th>Projeto Pronto</th>
                     <th>Retirada</th>
                     <th>Projeto / Obs</th>
                     <th>Material</th>
-                    <th>Quantidade</th>
+                    <th>Qtd</th>
                     <th>Solicitante</th>
                     <th>Contato</th>
                     <th>Arquivo</th>
@@ -223,7 +220,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="11" style="text-align:center;">Conectando com o servidor...</td></tr>
+                <tr><td colspan="10" style="text-align:center;">Conectando com o servidor...</td></tr>
             </tbody>
         </table>
     </div>
@@ -236,8 +233,7 @@
     const orderForm = document.getElementById('orderForm');
     const arquivoInput = document.getElementById('arquivo');
     const btnSubmit = document.getElementById('btnSubmit');
-    const inputFabricacao = document.getElementById('fabricacao');
-    const inputRetirada = document.getElementById('retirada');
+    const inputEntrega = document.getElementById('entrega');
     
     const themeSelector = document.getElementById('themeSelector');
     const customColorPicker = document.getElementById('customColorPicker');
@@ -245,6 +241,9 @@
     const mainContainer = document.getElementById('mainContainer');
     
     let senhaAdminLogado = "";
+
+    // Ícone SVG do WhatsApp
+    const svgWhatsApp = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>`;
 
     window.onload = function() {
         const savedTheme = localStorage.getItem('cncTheme') || 'default';
@@ -265,10 +264,9 @@
         hoje.setDate(hoje.getDate() + 2); 
         const minData = hoje.toISOString().split('T')[0];
         
-        inputFabricacao.min = minData;
-        inputFabricacao.max = "2026-12-31"; 
-        inputRetirada.min = minData;
-        inputRetirada.max = "2026-12-31"; 
+        // Aplica o mínimo para a data de retirada
+        inputEntrega.min = minData;
+        inputEntrega.max = "2026-12-31"; 
     };
 
     function applyAutoView() {
@@ -321,6 +319,17 @@
         localStorage.setItem('cncCustomColor', color);
     }
 
+    // Função de limpeza de data pro layout da tabela ficar impecável
+    function limparDataTabela(dataBruta) {
+        if(!dataBruta) return "";
+        let strData = String(dataBruta);
+        if(strData.includes('T')) {
+            const partes = strData.split('T')[0].split('-');
+            if(partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+        return strData;
+    }
+
     function formatarDataBR(dataIso) {
         if(!dataIso) return "";
         const partes = dataIso.split('-');
@@ -352,14 +361,14 @@
             
             renderTable(data);
         } catch (error) {
-            tableBody.innerHTML = '<tr><td colspan="11" style="color:red; text-align:center;">Erro de conexão com o banco de dados.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Erro de conexão com o banco de dados.</td></tr>';
         }
     }
 
     function renderTable(orders) {
         tableBody.innerHTML = '';
         if(orders.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="11" style="text-align:center;">Nenhum pedido encontrado.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Nenhum pedido encontrado.</td></tr>';
             return;
         }
 
@@ -378,7 +387,8 @@
                 if (numeroLimpo.length >= 10) {
                     if(!numeroLimpo.startsWith('55')) numeroLimpo = '55' + numeroLimpo;
                     const mensagem = encodeURIComponent(`Fala! Aqui é do laboratório do CEFET. O corte da sua peça '${order.peca}' já está pronto e liberado para retirada.`);
-                    linkWpp = `<a href="https://wa.me/${numeroLimpo}?text=${mensagem}" target="_blank" class="btn-wpp">💬 Avisar WPP</a>`;
+                    // AQUI ENTRA O ÍCONE NOVO DO WPP!
+                    linkWpp = `<a href="https://wa.me/${numeroLimpo}?text=${mensagem}" target="_blank" class="btn-wpp">${svgWhatsApp} WhatsApp</a>`;
                 }
             }
 
@@ -397,10 +407,13 @@
 
             let corBotaoAcao = (document.documentElement.getAttribute('data-theme') === 'black-white') ? '#111' : 'white';
 
+            // Limpa as datas para aparecerem no formato DD/MM/AAAA e não a bagunça do Google
+            let dataFormatadaTabela = limparDataTabela(order.data);
+            let entregaFormatadaTabela = limparDataTabela(order.entrega);
+
             tr.innerHTML = `
-                <td>${order.data}</td>
-                <td><strong>${order.fabricacao}</strong></td>
-                <td><strong>${order.retirada}</strong><br>${order.hora}</td>
+                <td>${dataFormatadaTabela}</td>
+                <td><strong>${entregaFormatadaTabela}</strong><br>${order.hora}</td>
                 <td><strong>${order.peca}</strong>${obsText}</td>
                 <td>${order.material}</td>
                 <td>${order.quantidade}</td>
@@ -417,14 +430,14 @@
     window.toggleAdmin = async function() {
         if (senhaAdminLogado !== "") {
             senhaAdminLogado = "";
-            document.getElementById('btnModoAdmin').innerText = "🔓 Monitor";
+            document.getElementById('btnModoAdmin').innerText = "🔓 Administrador";
             document.getElementById('btnModoAdmin').style.backgroundColor = "#6c757d";
             loadOrders();
-            alert("Modo Monitor desativado. Contatos ocultos.");
+            alert("Modo Administrador desativado. Contatos ocultos.");
             return;
         }
 
-        const senha = prompt("Digite a senha do monitor para liberar números e controles:");
+        const senha = prompt("Digite a senha de administrador para liberar números e controles:");
         if (senha) {
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -433,7 +446,8 @@
             const result = await response.json();
             if (result.sucesso) {
                 senhaAdminLogado = senha;
-                document.getElementById('btnModoAdmin').innerText = "🔒 Sair do Monitor";
+                // Botão muda para Sair do Administrador
+                document.getElementById('btnModoAdmin').innerText = "🔒 Sair do Administrador";
                 document.getElementById('btnModoAdmin').style.backgroundColor = "#dc3545";
                 renderTable(result.dados);
             } else {
@@ -466,14 +480,12 @@
         reader.onload = async function(event) {
             
             const dataPedido = new Date().toLocaleDateString('pt-BR');
-            const dataFabricacao = formatarDataBR(inputFabricacao.value);
-            const dataRetirada = formatarDataBR(inputRetirada.value);
+            const dataEntrega = formatarDataBR(inputEntrega.value);
 
             const novoPedido = {
                 action: "add",
                 data: dataPedido,
-                fabricacao: dataFabricacao,
-                retirada: dataRetirada,
+                entrega: dataEntrega,
                 hora: document.getElementById('hora').value,
                 peca: document.getElementById('peca').value,
                 material: document.getElementById('material').value,
