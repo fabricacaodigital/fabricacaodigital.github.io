@@ -7,7 +7,6 @@
     <style>
         /* ================= CORES E TEMAS ================= */
         :root {
-            /* 1. Branco e Azul (Padrão) */
             --bg-body: #f4f7f6;
             --bg-container: #ffffff;
             --text-main: #333333;
@@ -16,15 +15,12 @@
             --input-bg: #ffffff;
             --input-border: #cccccc;
             --input-text: #333333;
-            
-            /* Status Cores Fixas */
             --status-pendente: #ffc107;
             --status-usinagem: #17a2b8;
             --status-concluido: #28a745;
         }
 
         [data-theme="black-white"] {
-            /* 2. Preto e Branco */
             --bg-body: #121212;
             --bg-container: #1e1e1e;
             --text-main: #ffffff;
@@ -36,7 +32,6 @@
         }
 
         [data-theme="purple-white"] {
-            /* 3. Roxo com Branco */
             --bg-body: #faf5ff;
             --bg-container: #ffffff;
             --text-main: #333333;
@@ -48,7 +43,6 @@
         }
 
         [data-theme="pink-white"] {
-            /* 4. Rosa com Branco */
             --bg-body: #fdf2f8;
             --bg-container: #ffffff;
             --text-main: #333333;
@@ -60,7 +54,6 @@
         }
 
         [data-theme="custom"] {
-            /* 5. Personalizado */
             --bg-body: #f5f5f5;
             --bg-container: #ffffff;
             --text-main: #333333;
@@ -73,9 +66,8 @@
         /* ================= ESTILOS GERAIS ================= */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-body); margin: 0; padding: 20px 10px; color: var(--text-main); transition: all 0.3s ease; }
         
-        /* Modos de Visualização */
         .container { margin: 0 auto; background-color: var(--bg-container); padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; box-sizing: border-box; }
-        .view-desktop { max-width: 1200px; }
+        .view-desktop { max-width: 1300px; }
         .view-tablet { max-width: 768px; }
         .view-smartphone { max-width: 400px; padding: 20px 15px; }
         
@@ -87,7 +79,7 @@
         #customColorPicker { height: 35px; width: 45px; padding: 0; border: none; cursor: pointer; border-radius: 5px; background: none; }
         
         .form-group { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .form-group > div { flex: 1; min-width: 160px; }
+        .form-group > div { flex: 1; min-width: 150px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--input-border); border-radius: 5px; box-sizing: border-box; font-family: inherit; background-color: var(--input-bg); color: var(--input-text); }
         input[type="file"] { padding: 7px; background-color: var(--input-bg); }
@@ -99,9 +91,8 @@
         
         #btnModoAdmin { background-color: #6c757d; margin-top: 0; width: auto; padding: 8px 15px; color: white; }
         
-        /* Tabela Responsiva */
         .table-wrapper { overflow-x: auto; width: 100%; border-radius: 5px; border: 1px solid var(--input-border); }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; } 
+        table { width: 100%; border-collapse: collapse; min-width: 900px; } 
         th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--input-border); font-size: 0.85em; }
         th { background-color: var(--secondary-color); color: var(--primary-color); position: sticky; top: 0; }
         
@@ -118,7 +109,6 @@
         .btn-wpp { background-color: #25D366; color: white; text-decoration: none; padding: 6px 8px; border-radius: 3px; display: inline-block; font-size: 0.8em; margin-top: 4px; width: 100%; text-align: center; font-weight: bold; box-sizing: border-box;}
         .btn-wpp:hover { background-color: #128C7E; }
 
-        /* Ajustes específicos para o modo Smartphone */
         .view-smartphone .header-bar { flex-direction: column; align-items: stretch; }
         .view-smartphone .controls-panel { justify-content: space-between; }
         .view-smartphone h1 { text-align: center; font-size: 1.4em; }
@@ -133,7 +123,6 @@
         <h1>Painel Autolaser</h1>
         
         <div class="controls-panel">
-            <!-- Tela Selector com Detecção Automática -->
             <select id="viewSelector" class="styled-select" onchange="changeViewMode()" title="Modo de Visualização">
                 <option value="auto">🤖 Auto (Detectar)</option>
                 <option value="view-desktop">💻 Forçar PC</option>
@@ -141,7 +130,6 @@
                 <option value="view-smartphone">📱 Forçar Celular</option>
             </select>
 
-            <!-- Theme Selector -->
             <select id="themeSelector" class="styled-select" onchange="changeTheme()" title="Cor do Tema">
                 <option value="default">Branco e Azul</option>
                 <option value="black-white">Preto e Branco</option>
@@ -151,7 +139,6 @@
             </select>
             
             <input type="color" id="customColorPicker" style="display:none;" oninput="applyCustomColor()" title="Escolha sua cor">
-
             <button id="btnModoAdmin" onclick="toggleAdmin()">🔓 Monitor</button>
         </div>
     </div>
@@ -172,38 +159,45 @@
                 </select>
             </div>
             <div style="flex: 0.5;">
-                <label for="quantidade">Qtd</label>
+                <label for="quantidade">Quantidade</label>
                 <input type="number" id="quantidade" min="1" value="1" required>
             </div>
         </div>
         
         <div class="form-group">
             <div>
-                <label for="entrega">Data de Entrega (Mín 2 dias)</label>
-                <input type="date" id="entrega" required>
+                <label for="fabricacao">Data que quer o projeto pronto</label>
+                <input type="date" id="fabricacao" required>
             </div>
             <div>
-                <label for="hora">Hora da Retirada</label>
+                <label for="retirada">Data da retirada</label>
+                <input type="date" id="retirada" required>
+            </div>
+            <div>
+                <label for="hora">hora da retirada</label>
                 <input type="time" id="hora" required>
-            </div>
-            <div>
-                <label for="solicitante">Equipe / Solicitante</label>
-                <input type="text" id="solicitante" required>
-            </div>
-            <div>
-                <label for="contato">WhatsApp (Apenas Números)</label>
-                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Apenas DDD e número." required>
             </div>
         </div>
 
         <div class="form-group">
-            <div style="flex: 2;">
-                <label for="obs">Observações Adicionais (Opcional)</label>
-                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm..."></textarea>
+            <div style="flex: 1;">
+                <label for="solicitante">Equipe / Solicitante</label>
+                <input type="text" id="solicitante" required>
+            </div>
+            <div style="flex: 1;">
+                <label for="contato">WhatsApp (Apenas Números)</label>
+                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Apenas DDD e número." required>
             </div>
             <div style="flex: 2;">
                 <label for="arquivo">Arquivo (Vários formatos aceitos)</label>
                 <input type="file" id="arquivo" accept=".svg,.dxf,.plt,.ai,.bmp,.jpg,.jpeg,.png,.nc,.step,.stl,.webp,.dst,.gif" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div style="flex: 3;">
+                <label for="obs">Observações Adicionais (Opcional)</label>
+                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm..."></textarea>
             </div>
             <div style="flex: 1;">
                 <button type="submit" id="btnSubmit">Enviar Pedido</button>
@@ -216,10 +210,11 @@
             <thead>
                 <tr>
                     <th>Data Pedido</th>
+                    <th>Projeto Pronto</th>
                     <th>Retirada</th>
                     <th>Projeto / Obs</th>
                     <th>Material</th>
-                    <th>Qtd</th>
+                    <th>Quantidade</th>
                     <th>Solicitante</th>
                     <th>Contato</th>
                     <th>Arquivo</th>
@@ -228,23 +223,22 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <tr><td colspan="10" style="text-align:center;">Conectando com o servidor...</td></tr>
+                <tr><td colspan="11" style="text-align:center;">Conectando com o servidor...</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
 <script>
-    // URL OFICIAL DA API
     const API_URL = "https://script.google.com/macros/s/AKfycbzfm6pyVHJC3NlE_vFEnXUmuN8m_N4qncYQem5KJZ7Vqj5OCCgZofubtKN3eAOk4Duilw/exec"; 
 
     const tableBody = document.getElementById('tableBody');
     const orderForm = document.getElementById('orderForm');
     const arquivoInput = document.getElementById('arquivo');
     const btnSubmit = document.getElementById('btnSubmit');
-    const inputEntrega = document.getElementById('entrega');
+    const inputFabricacao = document.getElementById('fabricacao');
+    const inputRetirada = document.getElementById('retirada');
     
-    // Controles
     const themeSelector = document.getElementById('themeSelector');
     const customColorPicker = document.getElementById('customColorPicker');
     const viewSelector = document.getElementById('viewSelector');
@@ -252,9 +246,7 @@
     
     let senhaAdminLogado = "";
 
-    // INICIALIZAÇÃO
     window.onload = function() {
-        // Aplica o Tema Salvo
         const savedTheme = localStorage.getItem('cncTheme') || 'default';
         themeSelector.value = savedTheme;
         changeTheme();
@@ -265,19 +257,20 @@
             applyCustomColor();
         }
 
-        // Aplica o Modo de Tela Salvo (O padrão agora é AUTO)
         const savedView = localStorage.getItem('cncViewMode') || 'auto';
         viewSelector.value = savedView;
         changeViewMode();
 
-        // Limita a Data Mínima
         const hoje = new Date();
         hoje.setDate(hoje.getDate() + 2); 
-        inputEntrega.min = hoje.toISOString().split('T')[0];
-        inputEntrega.max = "2026-12-31"; 
+        const minData = hoje.toISOString().split('T')[0];
+        
+        inputFabricacao.min = minData;
+        inputFabricacao.max = "2026-12-31"; 
+        inputRetirada.min = minData;
+        inputRetirada.max = "2026-12-31"; 
     };
 
-    // FUNÇÕES DE DETECÇÃO DE TELA (INTELIGÊNCIA DO SISTEMA)
     function applyAutoView() {
         const screenWidth = window.innerWidth;
         if (screenWidth <= 600) {
@@ -292,21 +285,19 @@
     function changeViewMode() {
         const selectedView = viewSelector.value;
         if (selectedView === 'auto') {
-            applyAutoView(); // Sistema detecta sozinho
+            applyAutoView();
         } else {
-            mainContainer.className = 'container ' + selectedView; // Força a visão
+            mainContainer.className = 'container ' + selectedView; 
         }
         localStorage.setItem('cncViewMode', selectedView);
     }
 
-    // Ouve quando a pessoa gira o celular ou redimensiona a tela
     window.addEventListener('resize', () => {
         if (viewSelector.value === 'auto') {
             applyAutoView();
         }
     });
 
-    // FUNÇÕES DE TEMA
     function changeTheme() {
         const selectedTheme = themeSelector.value;
         if (selectedTheme === 'custom') {
@@ -337,7 +328,6 @@
         return dataIso;
     }
 
-    // CARREGAR DADOS DO BANCO
     async function loadOrders() {
         try {
             let response, data;
@@ -362,15 +352,14 @@
             
             renderTable(data);
         } catch (error) {
-            tableBody.innerHTML = '<tr><td colspan="10" style="color:red; text-align:center;">Erro de conexão com o banco de dados.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="11" style="color:red; text-align:center;">Erro de conexão com o banco de dados.</td></tr>';
         }
     }
 
-    // RENDERIZAR TABELA
     function renderTable(orders) {
         tableBody.innerHTML = '';
         if(orders.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Nenhum pedido encontrado.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="11" style="text-align:center;">Nenhum pedido encontrado.</td></tr>';
             return;
         }
 
@@ -410,7 +399,8 @@
 
             tr.innerHTML = `
                 <td>${order.data}</td>
-                <td><strong>${order.entrega}</strong><br>${order.hora}</td>
+                <td><strong>${order.fabricacao}</strong></td>
+                <td><strong>${order.retirada}</strong><br>${order.hora}</td>
                 <td><strong>${order.peca}</strong>${obsText}</td>
                 <td>${order.material}</td>
                 <td>${order.quantidade}</td>
@@ -424,7 +414,6 @@
         });
     }
 
-    // LOGIN DO MONITOR
     window.toggleAdmin = async function() {
         if (senhaAdminLogado !== "") {
             senhaAdminLogado = "";
@@ -453,7 +442,6 @@
         }
     }
 
-    // ENVIAR PEDIDO
     orderForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -478,12 +466,14 @@
         reader.onload = async function(event) {
             
             const dataPedido = new Date().toLocaleDateString('pt-BR');
-            const dataEntrega = formatarDataBR(inputEntrega.value);
+            const dataFabricacao = formatarDataBR(inputFabricacao.value);
+            const dataRetirada = formatarDataBR(inputRetirada.value);
 
             const novoPedido = {
                 action: "add",
                 data: dataPedido,
-                entrega: dataEntrega,
+                fabricacao: dataFabricacao,
+                retirada: dataRetirada,
                 hora: document.getElementById('hora').value,
                 peca: document.getElementById('peca').value,
                 material: document.getElementById('material').value,
@@ -520,7 +510,6 @@
         reader.readAsDataURL(file);
     });
 
-    // AVANÇAR E DELETAR
     window.advanceStatus = async function(id, novoStatus) {
         const response = await fetch(API_URL, {
             method: 'POST',
