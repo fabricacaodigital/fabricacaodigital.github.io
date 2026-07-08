@@ -115,111 +115,146 @@
         .view-smartphone h1 { text-align: center; font-size: 1.4em; }
         .view-smartphone .form-group > div { min-width: 100%; }
         .view-smartphone button { margin-top: 10px; }
+
+        /* ================= ESTILOS DOS JOGOS SECORETOS ================= */
+        #arcadeContainer { display: none; max-width: 500px; margin: 30px auto; background: #111; color: #fff; font-family: 'Courier New', Courier, monospace; border: 4px solid #333; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .arcade-btn-close { background-color: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 15px; font-family: sans-serif;}
+        
+        /* Jogo 1: Cobrinha */
+        #snakeCanvas { background-color: #000; border: 2px solid #00ff00; display: block; margin: 15px auto; }
+        #snakeScoreText { color: #00ff00; font-weight: bold; }
+
+        /* Jogo 2: Flappy Bird */
+        #flappyCanvas { background-color: #70c5ce; border: 2px solid #333; display: block; margin: 15px auto; cursor: pointer; }
+        #flappyScoreText { color: #fff; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="mainContainer" class="container view-desktop">
-    <div class="header-bar">
-        <h1>Painel Autolaser</h1>
-        
-        <div class="controls-panel">
-            <select id="viewSelector" class="styled-select" onchange="changeViewMode()" title="Modo de Visualização">
-                <option value="auto">🤖 Auto (Detectar)</option>
-                <option value="view-desktop">💻 Forçar PC</option>
-                <option value="view-tablet">📱 Forçar Tablet</option>
-                <option value="view-smartphone">📱 Forçar Celular</option>
-            </select>
+<!-- CONTEÚDO PRINCIPAL DO PAINEL -->
+<div id="panelContent">
+    <div id="mainContainer" class="container view-desktop">
+        <div class="header-bar">
+            <h1>Painel Autolaser</h1>
+            
+            <div class="controls-panel">
+                <select id="viewSelector" class="styled-select" onchange="changeViewMode()" title="Modo de Visualização">
+                    <option value="auto">🤖 Auto (Detectar)</option>
+                    <option value="view-desktop">💻 Forçar PC</option>
+                    <option value="view-tablet">📱 Forçar Tablet</option>
+                    <option value="view-smartphone">📱 Forçar Celular</option>
+                </select>
 
-            <select id="themeSelector" class="styled-select" onchange="changeTheme()" title="Cor do Tema">
-                <option value="default">Branco e Azul</option>
-                <option value="black-white">Preto e Branco</option>
-                <option value="purple-white">Roxo c/ Branco</option>
-                <option value="pink-white">Rosa c/ Branco</option>
-                <option value="custom">🎨 Personalizar</option>
-            </select>
+                <select id="themeSelector" class="styled-select" onchange="changeTheme()" title="Cor do Tema">
+                    <option value="default">Branco e Azul</option>
+                    <option value="black-white">Preto e Branco</option>
+                    <option value="purple-white">Roxo c/ Branco</option>
+                    <option value="pink-white">Rosa c/ Branco</option>
+                    <option value="custom">🎨 Personalizar</option>
+                </select>
+                
+                <input type="color" id="customColorPicker" style="display:none;" oninput="applyCustomColor()" title="Escolha sua cor">
+                
+                <button id="btnModoAdmin" onclick="toggleAdmin()">🔓 Administrador</button>
+            </div>
+        </div>
+        
+        <form id="orderForm">
+            <div class="form-group">
+                <div style="flex: 2;">
+                    <label for="peca">Nome do Projeto</label>
+                    <input type="text" id="peca" placeholder="Ex: Chassi Duna" required>
+                </div>
+                <div>
+                    <label for="material">Material (Laser)</label>
+                    <select id="material" required>
+                        <option value="">Selecione...</option>
+                        <option value="MDF">MDF</option>
+                        <option value="Acrílico">Acrílico</option>
+                        <option value="Papelão">Papelão</option>
+                    </select>
+                </div>
+                <div style="flex: 0.5;">
+                    <label for="quantidade">Qtd</label>
+                    <input type="number" id="quantidade" min="1" value="1" required>
+                </div>
+            </div>
             
-            <input type="color" id="customColorPicker" style="display:none;" oninput="applyCustomColor()" title="Escolha sua cor">
-            
-            <button id="btnModoAdmin" onclick="toggleAdmin()">🔓 Administrador</button>
+            <div class="form-group">
+                <div>
+                    <label for="entrega">Data de Retirada</label>
+                    <input type="date" id="entrega" required>
+                </div>
+                <div>
+                    <label for="hora">Hora de Retirada</label>
+                    <input type="time" id="hora" required>
+                </div>
+                <div style="flex: 1.5;">
+                    <label for="solicitante">Equipe / Solicitante</label>
+                    <input type="text" id="solicitante" required>
+                </div>
+                <div style="flex: 1.5;">
+                    <label for="contato">WhatsApp (Apenas Números)</label>
+                    <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Apenas DDD e número." required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div style="flex: 2;">
+                    <label for="obs">Observações Adicionais (Opcional)</label>
+                    <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm..."></textarea>
+                </div>
+                <div style="flex: 2;">
+                    <label for="arquivo">Arquivo (Vários formatos aceitos)</label>
+                    <input type="file" id="arquivo" accept=".svg,.dxf,.plt,.ai,.bmp,.jpg,.jpeg,.png,.nc,.step,.stl,.webp,.dst,.gif" required>
+                </div>
+                <div style="flex: 1;">
+                    <button type="submit" id="btnSubmit">Enviar Pedido</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-wrapper">
+            <table id="ordersTable">
+                <thead>
+                    <tr>
+                        <th>Data Pedido</th>
+                        <th>Retirada</th>
+                        <th>Projeto / Obs</th>
+                        <th>Material</th>
+                        <th>Qtd</th>
+                        <th>Solicitante</th>
+                        <th>Contato</th>
+                        <th>Arquivo</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="10" style="text-align:center;">Conectando com o servidor...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+
+<!-- CONTAINER DO MODO ARCADE FLIPERAMA (ESCONDIDO) -->
+<div id="arcadeContainer">
+    <button class="arcade-btn-close" onclick="fecharArcade()">✖ Fechar Jogo e Voltar</button>
+    <div id="gameTitle"><h2>MODO ARCADE SEGRETO</h2></div>
     
-    <form id="orderForm">
-        <div class="form-group">
-            <div style="flex: 2;">
-                <label for="peca">Nome do Projeto</label>
-                <input type="text" id="peca" placeholder="Ex: Chassi Duna" required>
-            </div>
-            <div>
-                <label for="material">Material (Laser)</label>
-                <select id="material" required>
-                    <option value="">Selecione...</option>
-                    <option value="MDF">MDF</option>
-                    <option value="Acrílico">Acrílico</option>
-                    <option value="Papelão">Papelão</option>
-                </select>
-            </div>
-            <div style="flex: 0.5;">
-                <label for="quantidade">Qtd</label>
-                <input type="number" id="quantidade" min="1" value="1" required>
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <div>
-                <label for="entrega">Data de Retirada</label>
-                <input type="date" id="entrega" required>
-            </div>
-            <div>
-                <label for="hora">Hora de Retirada</label>
-                <input type="time" id="hora" required>
-            </div>
-            <div style="flex: 1.5;">
-                <label for="solicitante">Equipe / Solicitante</label>
-                <input type="text" id="solicitante" required>
-            </div>
-            <div style="flex: 1.5;">
-                <label for="contato">WhatsApp (Apenas Números)</label>
-                <input type="tel" id="contato" placeholder="Ex: 21999999999" pattern="[0-9]{10,11}" title="Apenas DDD e número." required>
-            </div>
-        </div>
+    <!-- Tela do Jogo 1 (Cobrinha) -->
+    <div id="gameSnakeContainer" style="display:none;">
+        <p style="color:#00ff00;">Use as setas do teclado para guiar a cobrinha!</p>
+        <canvas id="snakeCanvas" width="300" height="300"></canvas>
+        <p id="snakeScoreText">Pontos: <span id="snakeScore">0</span></p>
+    </div>
 
-        <div class="form-group">
-            <div style="flex: 2;">
-                <label for="obs">Observações Adicionais (Opcional)</label>
-                <textarea id="obs" rows="2" placeholder="Ex: Cortar na espessura de 3mm..."></textarea>
-            </div>
-            <div style="flex: 2;">
-                <label for="arquivo">Arquivo (Vários formatos aceitos)</label>
-                <input type="file" id="arquivo" accept=".svg,.dxf,.plt,.ai,.bmp,.jpg,.jpeg,.png,.nc,.step,.stl,.webp,.dst,.gif" required>
-            </div>
-            <div style="flex: 1;">
-                <button type="submit" id="btnSubmit">Enviar Pedido</button>
-            </div>
-        </div>
-    </form>
-
-    <div class="table-wrapper">
-        <table id="ordersTable">
-            <thead>
-                <tr>
-                    <th>Data Pedido</th>
-                    <th>Retirada</th>
-                    <th>Projeto / Obs</th>
-                    <th>Material</th>
-                    <th>Qtd</th>
-                    <th>Solicitante</th>
-                    <th>Contato</th>
-                    <th>Arquivo</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <tr><td colspan="10" style="text-align:center;">Conectando com o servidor...</td></tr>
-            </tbody>
-        </table>
+    <!-- Tela do Jogo 2 (Flappy Bird) -->
+    <div id="gameFlappyContainer" style="display:none;">
+        <p>Toque na tela ou use a Barra de Espaço para voar!</p>
+        <canvas id="flappyCanvas" width="300" height="400"></canvas>
+        <p id="flappyScoreText">Pontos: <span id="flappyScore">0</span></p>
     </div>
 </div>
 
@@ -447,9 +482,29 @@
         }
     }
 
+    // ================= INTERCEPTADOR DE SESSÃO SECRETA (JOGOS) =================
     orderForm.addEventListener('submit', function(e) {
-        e.preventDefault();
         
+        const pecaValor = document.getElementById('peca').value.trim();
+        const materialValor = document.getElementById('material').value;
+        const qtdValor = document.getElementById('quantidade').value;
+
+        // CÓDIGO SECRETO 1: COBRINHA (000 + Acrílico + 8)
+        if (pecaValor === "000" && materialValor === "Acrílico" && qtdValor === "8") {
+            e.preventDefault();
+            activarArcade("snake");
+            return;
+        }
+
+        // CÓDIGO SECRETO 2: FLAPPY BIRD (111 + MDF + 3)
+        if (pecaValor === "111" && materialValor === "MDF" && qtdValor === "3") {
+            e.preventDefault();
+            activarArcade("flappy");
+            return;
+        }
+
+        // Fluxo normal do formulário caso não seja código secreto
+        e.preventDefault();
         const file = arquivoInput.files[0];
         if (!file) { alert("Por favor, anexe o arquivo do projeto."); return; }
         
@@ -469,7 +524,6 @@
 
         const reader = new FileReader();
         reader.onload = async function(event) {
-            
             const dataPedido = new Date().toLocaleDateString('pt-BR');
             const dataEntrega = formatarDataBR(inputEntrega.value);
 
@@ -495,14 +549,12 @@
                     body: JSON.stringify({ action: "add", ...novoPedido })
                 });
                 const result = await response.json();
-                
                 if(result.sucesso) {
                     orderForm.reset();
                     loadOrders();
                 } else {
                     alert(result.mensagem); 
                 }
-
             } catch(error) {
                 alert("Ocorreu um erro ao enviar. Tente novamente.");
             } finally {
@@ -513,17 +565,239 @@
         reader.readAsDataURL(file);
     });
 
+    // SISTEMA DO FLIPERAMA (ARCADE ENGINE)
+    let currentInterval = null;
+
+    function activarArcade(jogo) {
+        document.getElementById('panelContent').style.display = 'none';
+        document.getElementById('arcadeContainer').style.display = 'block';
+        
+        if(jogo === "snake") {
+            document.getElementById('gameSnakeContainer').style.display = 'block';
+            document.getElementById('gameFlappyContainer').style.display = 'none';
+            document.getElementById('gameTitle').innerHTML = "<h2>🕹️ COBRINHA RETRÔ 🕹️</h2>";
+            startSnake();
+        } else if(jogo === "flappy") {
+            document.getElementById('gameSnakeContainer').style.display = 'none';
+            document.getElementById('gameFlappyContainer').style.display = 'block';
+            document.getElementById('gameTitle').innerHTML = "<h2>🐦 FLAPPY BIRD MAKER 🐦</h2>";
+            startFlappy();
+        }
+    }
+
+    function fecharArcade() {
+        if(currentInterval) clearInterval(currentInterval);
+        document.getElementById('arcadeContainer').style.display = 'none';
+        document.getElementById('panelContent').style.display = 'block';
+        orderForm.reset();
+    }
+
+    // ================= SCRIPT JOGO 1: COBRINHA =================
+    function startSnake() {
+        const canvas = document.getElementById("snakeCanvas");
+        const ctx = canvas.getContext("2d");
+        const box = 15;
+        let snake = [{x: 10 * box, y: 10 * box}];
+        let direction = "RIGHT";
+        let food = { x: Math.floor(Math.random() * 19 + 1) * box, y: Math.floor(Math.random() * 19 + 1) * box };
+        let score = 0;
+        document.getElementById('snakeScore').innerText = score;
+
+        document.removeEventListener("keydown", changeDirection);
+        document.addEventListener("keydown", changeDirection);
+
+        function changeDirection(event) {
+            // Previne o scroll da tela ao usar as setas
+            if([37, 38, 39, 40].includes(event.keyCode)) event.preventDefault();
+            
+            if(event.keyCode == 37 && direction != "RIGHT") direction = "LEFT";
+            else if(event.keyCode == 38 && direction != "DOWN") direction = "UP";
+            else if(event.keyCode == 39 && direction != "LEFT") direction = "RIGHT";
+            else if(event.keyCode == 40 && direction != "UP") direction = "DOWN";
+        }
+
+        if(currentInterval) clearInterval(currentInterval);
+        
+        function draw() {
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for(let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i == 0) ? "#00ff00" : "#00aa00";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                ctx.strokeStyle = "#000";
+                ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            ctx.fillStyle = "#dc3545";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if(direction == "LEFT") snakeX -= box;
+            if(direction == "UP") snakeY -= box;
+            if(direction == "RIGHT") snakeX += box;
+            if(direction == "DOWN") snakeY += box;
+
+            if(snakeX == food.x && snakeY == food.y) {
+                score++;
+                document.getElementById('snakeScore').innerText = score;
+                food = { x: Math.floor(Math.random() * 19 + 1) * box, y: Math.floor(Math.random() * 19 + 1) * box };
+            } else {
+                snake.pop();
+            }
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            if(snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+                clearInterval(currentInterval);
+                alert("Game Over! Seus pontos: " + score);
+                startSnake();
+                return;
+            }
+
+            snake.unshift(newHead);
+        }
+
+        function collision(head, array) {
+            for(let i = 0; i < array.length; i++) {
+                if(head.x == array[i].x && head.y == array[i].y) return true;
+            }
+            return false;
+        }
+
+        currentInterval = setInterval(draw, 100);
+    }
+
+    // ================= SCRIPT JOGO 2: FLAPPY BIRD =================
+    function startFlappy() {
+        const canvas = document.getElementById("flappyCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let bird = { x: 50, y: 150, width: 20, height: 20, velocity: 0, gravity: 0.5, jump: -7 };
+        let pipes = [];
+        let frame = 0;
+        let score = 0;
+        let gameOver = false;
+
+        document.getElementById('flappyScore').innerText = score;
+
+        function jump(e) {
+            // Aceita barra de espaço ou toque na tela/clique
+            if (e.type === 'keydown' && e.code !== 'Space') return;
+            if (e.type === 'keydown') e.preventDefault(); 
+            
+            if (gameOver) {
+                startFlappy();
+                return;
+            }
+            bird.velocity = bird.jump;
+        }
+
+        document.removeEventListener("keydown", jump);
+        canvas.removeEventListener("mousedown", jump);
+        canvas.removeEventListener("touchstart", jump);
+        
+        document.addEventListener("keydown", jump);
+        canvas.addEventListener("mousedown", jump);
+        canvas.addEventListener("touchstart", jump, {passive: false});
+
+        if(currentInterval) clearInterval(currentInterval);
+
+        function draw() {
+            // Desenha o fundo
+            ctx.fillStyle = "#70c5ce"; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (gameOver) {
+                ctx.fillStyle = "black";
+                ctx.font = "bold 20px Courier New";
+                ctx.textAlign = "center";
+                ctx.fillText("Game Over!", canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillText("Pontos: " + score, canvas.width / 2, canvas.height / 2 + 10);
+                ctx.font = "14px Courier New";
+                ctx.fillText("Toque para reiniciar", canvas.width / 2, canvas.height / 2 + 40);
+                return;
+            }
+
+            // Física do Pássaro
+            bird.velocity += bird.gravity;
+            bird.y += bird.velocity;
+
+            // Desenha o Pássaro (Um quadrado amarelo simulando o passarinho)
+            ctx.fillStyle = "#f1c40f"; 
+            ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+            ctx.strokeStyle = "#000";
+            ctx.strokeRect(bird.x, bird.y, bird.width, bird.height);
+
+            // Geração de Canos
+            if (frame % 100 === 0) {
+                let gap = 110; 
+                let topHeight = Math.random() * (canvas.height - gap - 40) + 20;
+                pipes.push({
+                    x: canvas.width, 
+                    y: 0, 
+                    w: 40, 
+                    h: topHeight, 
+                    bottomY: topHeight + gap, 
+                    bottomH: canvas.height - topHeight - gap,
+                    passed: false
+                });
+            }
+
+            for (let i = 0; i < pipes.length; i++) {
+                let p = pipes[i];
+                p.x -= 2; 
+
+                // Desenha Cano de Cima
+                ctx.fillStyle = "#2ecc71";
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+                ctx.strokeRect(p.x, p.y, p.w, p.h);
+                
+                // Desenha Cano de Baixo
+                ctx.fillRect(p.x, p.bottomY, p.w, p.bottomH);
+                ctx.strokeRect(p.x, p.bottomY, p.w, p.bottomH);
+
+                // Colisão com os canos
+                if (
+                    bird.x < p.x + p.w &&
+                    bird.x + bird.width > p.x &&
+                    (bird.y < p.y + p.h || bird.y + bird.height > p.bottomY)
+                ) {
+                    gameOver = true;
+                }
+
+                // Pontuação
+                if (p.x + p.w < bird.x && !p.passed) {
+                    score++;
+                    document.getElementById('flappyScore').innerText = score;
+                    p.passed = true;
+                }
+            }
+
+            // Limpa canos que já saíram da tela
+            pipes = pipes.filter(p => p.x + p.w > 0);
+
+            // Colisão com o teto ou chão
+            if (bird.y + bird.height >= canvas.height || bird.y <= 0) {
+                gameOver = true;
+            }
+
+            frame++;
+        }
+
+        currentInterval = setInterval(draw, 20);
+    }
+
+    // INTERFACE DE AÇÕES DE ADMINISTRADOR
     window.advanceStatus = async function(id, novoStatus) {
         const response = await fetch(API_URL, {
             method: 'POST',
             body: JSON.stringify({ action: "update", id: id, novoStatus: novoStatus, senhaDigitada: senhaAdminLogado })
         });
         const result = await response.json();
-        if (result.sucesso) {
-            loadOrders();
-        } else {
-            alert(result.mensagem);
-        }
+        if (result.sucesso) { loadOrders(); }
     };
 
     window.deleteOrder = async function(id) {
@@ -533,11 +807,7 @@
                 body: JSON.stringify({ action: "delete", id: id, senhaDigitada: senhaAdminLogado })
             });
             const result = await response.json();
-            if (result.sucesso) {
-                loadOrders();
-            } else {
-                alert(result.mensagem);
-            }
+            if (result.sucesso) { loadOrders(); }
         }
     };
 
